@@ -14,7 +14,7 @@
     "graphics.py": true,
     "graphics.pyc": true
   },
-  "publication": "Approved; deployment verification pending",
+  "publication": "Published and verified at https://computphillip.github.io/cs499-eportfolio/",
   "video": "not recorded",
   "browser_checks": [
     "Desktop homepage and algorithms layout visually inspected",
@@ -27,5 +27,87 @@
     "Rename through Replace selected",
     "Load restored board and turn",
     "Deletion cancellation preserved record"
+  ],
+  "live_checks": [
+    {
+      "path": "algorithms.html",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "database.html",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "downloads.html",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "review.html",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "software.html",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "documents/Algorithms_and_Data_Structures_Enhancement_Narrative.docx",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "documents/Code_Review_Recording_Guide.docx",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "documents/Database_Enhancement_Narrative.docx",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "documents/Professional_Self_Assessment_Draft.docx",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "documents/Software_Design_and_Engineering_Enhancement_Narrative_APA_Example_Style.docx",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "enhanced.zip",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "milestones-algorithms.zip",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "milestones-database.zip",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "milestones-software_design.zip",
+      "status": 200,
+      "sha256_matches": true
+    },
+    {
+      "path": "original.zip",
+      "status": 200,
+      "sha256_matches": true
+    }
   ]
 }

@@ -1,5 +1,9 @@
 # Phillip Gooden CS 499 ePortfolio
 
+Live portfolio: https://computphillip.github.io/cs499-eportfolio/
+
+Repository: https://github.com/ComputPhillip/cs499-eportfolio
+
 This is a buildless GitHub Pages site. Open `index.html` locally to preview it. The homepage presents the professional self-assessment first. Each enhancement page includes its complete narrative and source-code examples, with Word and ZIP downloads.
 
 ## Contents
@@ -18,13 +22,13 @@ This is a buildless GitHub Pages site. Open `index.html` locally to preview it. 
 2. Record the code review and host it. The rubric requested recording before enhancement; the supplied recording guide identifies the current retrospective timing honestly. Clarify acceptance of the late recording with the instructor.
 3. Add the hosted video link to `review.html`, replacing the video-pending paragraph with the actual link. Keep the guide available. Do not invent a video URL.
 4. Incorporate instructor feedback in the narratives and regenerate the matching HTML text/downloads.
-5. Publish and verify the GitHub Pages URL before submitting it. Publication to ComputPhillip/cs499-eportfolio was approved on November 1, 2026.
+5. Recheck the published Pages URL after your final updates, then include it in your course submission. The six pages and all Word and ZIP downloads were verified on November 1, 2026.
 
 ## Publish with GitHub Pages
 
 The connected GitHub account is `ComputPhillip`. GitHub authentication was verified for publication. No credentials belong in this project.
 
-Create a dedicated repository (suggested name `cs499-eportfolio`) and place the contents of this folder at the repository root. Public hosting will expose the included code and documents; review the materials first. Commit and push the contents to `main`.
+The public repository is `ComputPhillip/cs499-eportfolio`. The site is deployed from the root of `main`. To update it, edit the relevant files, review the changes, and commit and push to `main`.
 
 In that repository, open **Settings → Pages → Build and deployment**, select **Deploy from a branch**, then select **main** and **/(root)** and save. This folder contains `.nojekyll` and uses relative links, so it also works as a project site. Use the URL returned by GitHub when deployment succeeds; an expected address is not proof of deployment.
 
