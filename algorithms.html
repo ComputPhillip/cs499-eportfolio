@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Phillip Gooden’s computer graphics capstone: graphical checkers, minimax search, and database persistence."><title>Algorithms and data structures | Phillip Gooden</title><link rel="stylesheet" href="styles.css"></head><body><a class="skip" href="#main">Skip to content</a><header><div class="header-inner"><a class="brand" href="index.html">Phillip Gooden<span>Computer graphics · CS 499</span></a><nav aria-label="Main navigation"><a href="index.html">Self-assessment</a><a href="software.html">Design</a><a href="algorithms.html" aria-current="page">Algorithms</a><a href="database.html">Database</a><a href="review.html">Code review</a><a href="downloads.html">Files</a></nav></div></header><main id="main"><p class="eyebrow">Enhancement 02 · Algorithms and data structures</p><h1>Search further. Evaluate fewer positions.</h1><p class="lede">Depth-limited minimax evaluates future turns. Alpha-beta pruning avoids branches that cannot improve the decision.</p><div class="toc"><a href="#narrative">Read narrative</a><a href="#source">Inspect code</a><a href="milestones-algorithms.zip">Algorithms milestone ZIP</a><a href="artifacts/milestones/algorithms/benchmarks/search_results.csv">Benchmark CSV</a></div><div class="metrics"><div><strong>1,828 → 459</strong><span>Opening nodes at depth 4</span></div><div><strong>1,580 → 281</strong><span>Seeded midgame nodes at depth 4</span></div><div><strong>9 of 9</strong><span>Fixture pairs agree on score and move</span></div></div><div class="reading"><h2>Correctness before speed</h2><p>The search preserves the original board and counts completed turns, so forced multi-jumps are evaluated together. An independent exhaustive oracle checks scores. Stable move ordering makes ties reproducible.</p><p>The November 1 benchmark compares three positions at three depths, with three runs per algorithm. These observations demonstrate pruning on selected positions, not stronger tournament play or a universal speedup.</p></div><section id="narrative" class="section-rule"><a class="button secondary" href="documents/Algorithms_and_Data_Structures_Enhancement_Narrative.docx">Download Word document (.docx)</a><article class="doc-body"><h2>Artifact and Purpose</h2><p>I selected my IT 450 Python checkers project to connect my interest in computer graphics with the algorithms that determine an interactive application's behavior. The original file, Checkers_v24.py, was supplied for this capstone on November 1, 2026; its exact original creation date is not established. Its opponent filters available moves using rules and then chooses randomly. The algorithms milestone builds on the separately preserved software design version and adds depth-limited minimax with alpha-beta pruning. The original files and the software design milestone remain available for comparison.</p><p>This enhancement gives the computer player a way to consider future responses while preserving the graphical board, animation, and legal-move highlights. It belongs in my portfolio because it connects a visible user experience to a testable decision process. The work demonstrates recursive search, explicit state representation, deterministic comparisons, and evaluation of the cost of an algorithm. It does not establish that the computer is a strong tournament player.</p><h2>Algorithm and Data Structure Decisions</h2><p>Minimax evaluates possible continuations from the perspective of the player who starts the search. A position maximizes the score when that player moves and minimizes it when the opponent moves. Terminal wins and losses receive scores of 100000 and negative 100000. Other positions use a heuristic based on piece material, pawn advancement, and central placement. Kings have a higher material value than pawns. These weights make the decision process inspectable, but they are design choices rather than values established through playing-strength experiments.</p><p>The most important rule interaction was the definition of search depth. In this implementation, depth counts completed turns, not individual jumps. A forced capture continuation keeps the same player and does not reduce the remaining depth until the turn changes. Evaluation also waits for an unfinished capture sequence to complete. Otherwise, the algorithm could judge an intermediate position as though the opponent were allowed to move. Promotion retains the software design rule that crowning ends the turn.</p><p>A dictionary maps integer coordinate pairs to immutable Piece objects. Each search child receives a new dictionary, preventing exploration of one branch from changing another branch or the live game. Move objects make the start, destination, and captured square explicit. Recursive depth-first traversal holds the active path and sibling move lists instead of constructing a complete tree in memory. This representation favors clarity and isolated state over the lower allocation cost that a compact board or in-place undo scheme might provide.</p><p>Alpha-beta pruning stops exploring siblings when the maximizing and minimizing bounds meet. Both pruned and unpruned searches use the same heuristic and stable move order, prioritizing captures and promotions before coordinate order. Stable tie-breaking makes comparisons repeatable. For a tree of complete turns, minimax has approximately O(b^d) growth in branching factor b and turn depth d. Forced captures add action nodes within a turn, and board copying adds per-node work. Pruning reduces work on many positions, but its worst-case cost remains exponential. No transposition table is included.</p><h2>Validation and Measured Results</h2><p>The milestone includes 20 automated tests covering rules, storage, search, and selected Tkinter interactions. Search checks compare scores with an independent exhaustive oracle, compare pruning with plain minimax, verify both player perspectives and deterministic ties, and confirm that input states are unchanged. Other checks cover terminal positions, forced captures, invalid depths, cancellation, completion of a computer move through animation, and rejection of a stale worker result after reset. The passing suite supports these tested behaviors without proving every possible game state correct.</p><p>A reproducible benchmark compares an opening position, a seeded midgame, and a forced capture chain at depths two, three, and four. Each algorithm is run three times, and the CSV records median search time along with nodes, leaves, cutoffs, score, and move. Scores and selected moves matched for all nine position-depth pairs. At opening depth four, alpha-beta reduced visited nodes from 1828 to 459, with recorded median time decreasing from 0.071744 to 0.017931 seconds. At midgame depth four, nodes fell from 1580 to 281. The capture chain used three nodes with either algorithm. These measurements demonstrate savings for these fixtures; they do not guarantee the same speedup for other positions or computers.</p><p>Search runs in a worker thread while the main thread owns Tkinter. A cancellation event and generation counter prevent obsolete decisions from changing a reset or loaded game. Visible interaction checks exercised an opening move, capture and recapture, a depth change, save and load, and a winning custom double capture. Those checks exposed a clipped status footer. Reserving footer space before the expanding canvas corrected it in this milestone, and a regression test checks the default and minimum window sizes. A complete standard-opening playthrough remains useful additional validation.</p><h2>Reflection and Course Outcomes</h2><p>The main lesson from this enhancement is that an efficient search must first model the rules correctly. Treating every jump as a turn would make an otherwise recognizable minimax implementation reason about the wrong game. Separating the model from the interface made it possible to test that distinction directly. The benchmark also reinforced the need to compare equivalent implementations: changing the evaluation, move order, or tie-breaking at the same time would make the pruning comparison harder to interpret.</p><p>The work provides strong evidence for the outcome concerning algorithmic solutions and design trade-offs through explicit depth semantics, an independent oracle, and measured comparisons. It also supports the computing-tools outcome through repeatable tests, benchmarks, and integration of search into a usable graphical application. Written explanations, visible search statistics, and preserved versions contribute to professional communication. The recorded code review remains separate evidence needed for oral communication.</p><p>Collaboration is partially addressed through readable modules and reproducible evidence that another reviewer can inspect. A documented instructor or peer feedback cycle has not yet been supplied, so I cannot claim that outcome is fully demonstrated by this milestone. Resource controls and cancellation strengthen application reliability, while inherited save validation addresses a data boundary. These controls are limited evidence of a security mindset, not a complete security assessment. Further work includes broader game testing, review of heuristic quality, and incorporation of actual instructor feedback.</p></article></section><section id="source" class="section-rule"><h2>Inspect the implementation</h2><details><summary>Minimax and alpha-beta search</summary><p><a href="artifacts/milestones/algorithms/checkers/ai.py">Download source file</a></p><pre tabindex="0"><code>"""Minimax with alpha-beta pruning; depth counts completed turns, not jumps."""
+from dataclasses import dataclass
+from math import inf
+from time import perf_counter
+from .model import Game, Move
+
+WIN = 100_000
+
+class SearchCancelled(Exception):
+    """Cancelled searches never return partial decisions."""
+
+@dataclass
+class SearchStats:
+    nodes: int = 0
+    leaves: int = 0
+    cutoffs: int = 0
+    elapsed_seconds: float = 0.0
+
+@dataclass
+class SearchResult:
+    move: Move | None
+    score: int
+    depth: int
+    stats: SearchStats
+
+def evaluate(game, perspective):
+    total = 0
+    for (x, y), piece in game.board.items():
+        value = 175 if piece.king else 100 + 4 * (y if piece.color == 'White' else 7-y)
+        value += 3 if 2 &lt;= x &lt;= 5 and 2 &lt;= y &lt;= 5 else 0
+        total += value if piece.color == perspective else -value
+    return total
+
+def ordered_moves(game, moves):
+    """Identical stable order in both searches, including deterministic ties."""
+    def key(move):
+        piece = game.board[move.start]
+        captured = game.board.get(move.captured)
+        promotion = not piece.king and move.end[1] == (7 if piece.color == 'White' else 0)
+        return (-int(captured is not None), -int(bool(captured and captured.king)),
+                -int(promotion), move.start, move.end)
+    return sorted(moves, key=key)
+
+def search(game, depth=3, *, pruning=True, cancel=None):
+    if type(depth) is not int or not 1 &lt;= depth &lt;= 8:
+        raise ValueError('Search depth must be an integer from 1 through 8.')
+    started = perf_counter()
+    stats = SearchStats()
+    perspective = game.turn
+    def visit(state, remaining, alpha, beta):
+        if cancel is not None and cancel.is_set():
+            raise SearchCancelled()
+        stats.nodes += 1
+        moves = state.legal_moves()
+        if state.winner or not moves:
+            stats.leaves += 1
+            winner = state.winner or ('Black' if state.turn == 'White' else 'White')
+            return (WIN if winner == perspective else -WIN), None
+        if remaining &lt;= 0 and state.forced is None:
+            stats.leaves += 1
+            return evaluate(state, perspective), None
+        maximizing = state.turn == perspective
+        best_score, best_move = (-inf if maximizing else inf), None
+        for move in ordered_moves(state, moves):
+            # Immutable pieces are shared; mutable board dictionaries are copied.
+            child = Game(dict(state.board), state.turn, state.forced, state.winner)
+            child.apply(move)
+            child_depth = remaining - int(child.turn != state.turn)
+            score, _ = visit(child, child_depth, alpha, beta)
+            if best_move is None or (score &gt; best_score if maximizing else score &lt; best_score):
+                best_score, best_move = score, move
+            if maximizing:
+                alpha = max(alpha, best_score)
+            else:
+                beta = min(beta, best_score)
+            if pruning and alpha &gt;= beta:
+                stats.cutoffs += 1
+                break
+        return best_score, best_move
+    score, move = visit(game, depth, -inf, inf)
+    stats.elapsed_seconds = perf_counter() - started
+    return SearchResult(move, int(score), depth, stats)
+
+def choose_move(game, rng=None, depth=3):
+    """Compatibility entry point; rng is unused because ties are deterministic."""
+    return search(game, depth).move
+</code></pre></details><details><summary>Search tests and independent oracle</summary><p><a href="artifacts/milestones/algorithms/tests/test_search.py">Download source file</a></p><pre tabindex="0"><code>import unittest
+from random import Random
+from threading import Event
+from checkers.model import Game, Piece, Move
+from checkers.ai import search, evaluate, WIN, SearchCancelled
+
+
+def reference_score(game, depth, perspective):
+    """Small independent exhaustive oracle with no alpha/beta or ordering."""
+    legal = game.legal_moves()
+    if game.winner or not legal:
+        winner = game.winner or ('Black' if game.turn == 'White' else 'White')
+        return WIN if winner == perspective else -WIN
+    if depth &lt;= 0 and game.forced is None:
+        return evaluate(game, perspective)
+    values = []
+    for move in legal:
+        child = Game(dict(game.board), game.turn, game.forced, game.winner)
+        child.apply(move)
+        values.append(reference_score(child, depth-int(child.turn != game.turn), perspective))
+    return (max if game.turn == perspective else min)(values)
+
+
+class SearchTests(unittest.TestCase):
+    def test_seeded_positions_match_exhaustive_oracle(self):
+        rng = Random(499)
+        game = Game.standard()
+        for step in range(16):
+            if game.winner:
+                break
+            if step % 2 == 0:
+                with self.subTest(step=step, turn=game.turn):
+                    before = Game(dict(game.board),game.turn,game.forced,game.winner)
+                    result = search(game,2)
+                    plain = search(game,2,pruning=False)
+                    self.assertEqual(result.score,reference_score(game,2,game.turn))
+                    self.assertEqual((result.score,result.move),(plain.score,plain.move))
+                    self.assertLessEqual(result.stats.nodes,plain.stats.nodes)
+                    self.assertEqual(game,before)
+                    child = Game(dict(game.board),game.turn,game.forced)
+                    child.apply(result.move)
+                    self.assertEqual(result.score,reference_score(child,2-int(child.turn!=game.turn),game.turn))
+            game.apply(rng.choice(game.legal_moves()))
+
+    def test_opening_pruning_reduces_nodes(self):
+        a,b=search(Game.standard(),3),search(Game.standard(),3,pruning=False)
+        self.assertEqual((a.move,a.score),(b.move,b.score))
+        self.assertLess(a.stats.nodes,b.stats.nodes)
+        self.assertGreater(a.stats.cutoffs,0)
+
+    def test_capture_chain_finishes_at_depth_one(self):
+        game=Game({(0,0):Piece('White'),(1,1):Piece('Black'),(3,3):Piece('Black')})
+        result=search(game,1)
+        self.assertEqual(result.score,WIN)
+        self.assertEqual(result.move,Move((0,0),(2,2),(1,1)))
+        game.apply(result.move)
+        self.assertEqual(search(game,1).move,Move((2,2),(4,4),(3,3)))
+
+    def test_black_capture_win(self):
+        game=Game({(4,4):Piece('Black'),(3,3):Piece('White')},turn='Black')
+        self.assertEqual(search(game,1).score,WIN)
+
+    def test_terminal_and_blocked(self):
+        game=Game({(0,0):Piece('White')},turn='Black')
+        self.assertEqual(search(game,2).score,-WIN)
+        self.assertIsNone(search(game,2).move)
+        game.winner='Black'
+        self.assertEqual(search(game,2).score,WIN)
+
+    def test_cancellation_and_depth_validation(self):
+        event=Event(); event.set()
+        with self.assertRaises(SearchCancelled):
+            search(Game.standard(),4,cancel=event)
+        for depth in [0,-1,9,True,1.5]:
+            with self.assertRaises(ValueError): search(Game.standard(),depth)
+
+    def test_deterministic_ties(self):
+        game=Game.standard()
+        self.assertEqual(search(game,2).move,search(game,2).move)
+
+
+if __name__=='__main__': unittest.main()
+</code></pre></details><details><summary>Reproducible benchmark</summary><p><a href="artifacts/milestones/algorithms/benchmark_search.py">Download source file</a></p><pre tabindex="0"><code>"""Reproducible fixed-position comparison; results are not a strength tournament."""
+import argparse
+import csv
+import platform
+from pathlib import Path
+from random import Random
+from statistics import median
+from checkers.model import Game, Piece
+from checkers.ai import search
+
+
+def positions():
+    game=Game.standard()
+    rng=Random(499)
+    for _ in range(18):
+        if game.winner: break
+        game.apply(rng.choice(game.legal_moves()))
+    return {'opening':Game.standard(),'seeded_midgame':game,
+            'capture_chain':Game({(0,0):Piece('White'),(1,1):Piece('Black'),(3,3):Piece('Black')})}
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output',default='benchmarks/search_results.csv')
+    parser.add_argument('--repeats',type=int,default=3)
+    args=parser.parse_args()
+    if args.repeats&lt;1: parser.error('repeats must be positive')
+    rows=[]
+    for name,game in positions().items():
+        for depth in (2,3,4):
+            pair=[]
+            for pruning in (False,True):
+                runs=[search(game,depth,pruning=pruning) for _ in range(args.repeats)]
+                result=runs[0]
+                pair.append(result)
+                rows.append(dict(position=name,depth=depth,algorithm='alpha_beta' if pruning else 'minimax',
+                                 score=result.score,move=str(result.move),nodes=result.stats.nodes,
+                                 leaves=result.stats.leaves,cutoffs=result.stats.cutoffs,
+                                 median_seconds=round(median(r.stats.elapsed_seconds for r in runs),6),
+                                 repeats=args.repeats,python=platform.python_version(),platform=platform.platform()))
+            assert (pair[0].score,pair[0].move)==(pair[1].score,pair[1].move)
+            print(f'{name} depth {depth}: {pair[0].stats.nodes} -&gt; {pair[1].stats.nodes} nodes; scores/moves agree')
+    path=Path(args.output); path.parent.mkdir(parents=True,exist_ok=True)
+    with path.open('w',newline='',encoding='utf-8') as stream:
+        writer=csv.DictWriter(stream,fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
+    print(path)
+
+
+if __name__=='__main__': main()
+</code></pre></details></section></main><footer><span>Phillip Gooden · Southern New Hampshire University · 2026</span><span>Python · Tkinter · SQLite</span></footer></body></html>

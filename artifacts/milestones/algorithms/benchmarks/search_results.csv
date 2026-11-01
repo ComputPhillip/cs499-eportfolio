@@ -1,0 +1,19 @@
+position,depth,algorithm,score,move,nodes,leaves,cutoffs,median_seconds,repeats,python,platform
+opening,2,minimax,0,"Move(start=(6, 2), end=(5, 3), captured=None)",57,49,0,0.002192,3,3.12.14,Windows-11-10.0.26200-SP0
+opening,2,alpha_beta,0,"Move(start=(6, 2), end=(5, 3), captured=None)",30,22,5,0.001102,3,3.12.14,Windows-11-10.0.26200-SP0
+opening,3,minimax,7,"Move(start=(2, 2), end=(3, 3), captured=None)",359,302,0,0.013925,3,3.12.14,Windows-11-10.0.26200-SP0
+opening,3,alpha_beta,7,"Move(start=(2, 2), end=(3, 3), captured=None)",102,75,16,0.003821,3,3.12.14,Windows-11-10.0.26200-SP0
+opening,4,minimax,-8,"Move(start=(0, 2), end=(1, 3), captured=None)",1828,1469,0,0.071744,3,3.12.14,Windows-11-10.0.26200-SP0
+opening,4,alpha_beta,-8,"Move(start=(0, 2), end=(1, 3), captured=None)",459,308,99,0.017931,3,3.12.14,Windows-11-10.0.26200-SP0
+seeded_midgame,2,minimax,2,"Move(start=(3, 1), end=(2, 2), captured=None)",65,56,0,0.002106,3,3.12.14,Windows-11-10.0.26200-SP0
+seeded_midgame,2,alpha_beta,2,"Move(start=(3, 1), end=(2, 2), captured=None)",36,27,6,0.001152,3,3.12.14,Windows-11-10.0.26200-SP0
+seeded_midgame,3,minimax,28,"Move(start=(1, 1), end=(2, 2), captured=None)",312,240,0,0.010012,3,3.12.14,Windows-11-10.0.26200-SP0
+seeded_midgame,3,alpha_beta,28,"Move(start=(1, 1), end=(2, 2), captured=None)",91,60,19,0.002961,3,3.12.14,Windows-11-10.0.26200-SP0
+seeded_midgame,4,minimax,21,"Move(start=(1, 1), end=(2, 2), captured=None)",1580,1235,0,0.050932,3,3.12.14,Windows-11-10.0.26200-SP0
+seeded_midgame,4,alpha_beta,21,"Move(start=(1, 1), end=(2, 2), captured=None)",281,175,78,0.008574,3,3.12.14,Windows-11-10.0.26200-SP0
+capture_chain,2,minimax,100000,"Move(start=(0, 0), end=(2, 2), captured=(1, 1))",3,1,0,1e-05,3,3.12.14,Windows-11-10.0.26200-SP0
+capture_chain,2,alpha_beta,100000,"Move(start=(0, 0), end=(2, 2), captured=(1, 1))",3,1,0,1e-05,3,3.12.14,Windows-11-10.0.26200-SP0
+capture_chain,3,minimax,100000,"Move(start=(0, 0), end=(2, 2), captured=(1, 1))",3,1,0,1e-05,3,3.12.14,Windows-11-10.0.26200-SP0
+capture_chain,3,alpha_beta,100000,"Move(start=(0, 0), end=(2, 2), captured=(1, 1))",3,1,0,8e-06,3,3.12.14,Windows-11-10.0.26200-SP0
+capture_chain,4,minimax,100000,"Move(start=(0, 0), end=(2, 2), captured=(1, 1))",3,1,0,8e-06,3,3.12.14,Windows-11-10.0.26200-SP0
+capture_chain,4,alpha_beta,100000,"Move(start=(0, 0), end=(2, 2), captured=(1, 1))",3,1,0,9e-06,3,3.12.14,Windows-11-10.0.26200-SP0

@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "turn": "White",
+  "forced": null,
+  "pieces": [
+    {
+      "x": 0,
+      "y": 0,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 1,
+      "y": 7,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "color": "White",
+      "king": false
+    },
+    {
+      "x": 7,
+      "y": 5,
+      "color": "Black",
+      "king": false
+    },
+    {
+      "x": 7,
+      "y": 7,
+      "color": "Black",
+      "king": false
+    }
+  ]
+}

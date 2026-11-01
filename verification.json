@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-01",
+  "database_tests": 31,
+  "earlier_milestones": "Original and Python implementation bytes unchanged; publication README text revised",
+  "html_pages": 6,
+  "local_links_checked": 161,
+  "broken_links": [],
+  "original_vs_supplied": {
+    "checkers.txt": true,
+    "Checkers_v24.py": true,
+    "download": true,
+    "download (1)": true,
+    "graphics.cpython-34.pyc": true,
+    "graphics.py": true,
+    "graphics.pyc": true
+  },
+  "publication": "Approved; deployment verification pending",
+  "video": "not recorded",
+  "browser_checks": [
+    "Desktop homepage and algorithms layout visually inspected",
+    "390px responsive algorithms layout inspected",
+    "Source anchor and expandable code exercised"
+  ],
+  "github_authentication": "Verified as ComputPhillip outside network sandbox",
+  "database_visible_checks": [
+    "Save new opening",
+    "Rename through Replace selected",
+    "Load restored board and turn",
+    "Deletion cancellation preserved record"
+  ]
+}

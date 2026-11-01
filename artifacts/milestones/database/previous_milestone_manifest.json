@@ -1,0 +1,17 @@
+{
+  "benchmark_search.py": "927e8b702b2232393f5c7e071c0e6df9f6958bb78191016bed7d8d6d8e98e28a",
+  "README.md": "b82586579ae8b7bdca6818e55ce026035942af7950bffedad26e73c17ea087dc",
+  "run_checkers.py": "73f1238d3396a923ca9d75077252db71b780971e5cfbde973dd0b3dd123cfdbc",
+  "benchmarks\\search_results.csv": "114386bcf2a17689e8fe07713b449f07b2bc1bb41d962b6dc5730055f7b4c9af",
+  "benchmarks\\ui_saved_game.json": "90224550f6592932a722200b24880e30ea67c1adebb7d1c56026bfb6180758e6",
+  "checkers\\ai.py": "d7b9745ac37e5c19731e89f19b7458310ac0fcf73dd580a77b3d1026e5882e39",
+  "checkers\\app.py": "5e7b2baf6a0df83301fadc8736ed116558c1299e5adf869d4d52a7c4df8af8c9",
+  "checkers\\heuristic_ai.py": "c19cf363330ded9906afd16da4d75512c4f4503b3f370f856d7aeaa9c47f3259",
+  "checkers\\model.py": "c48ddc080a2273f76c3671f3e444ad32fac958f03ff99ecb15fd80e73dfea583",
+  "checkers\\storage.py": "e088cc6e163eaec83c4b9196cca368837d4ebfc135d88a4539ea61952ac65fb1",
+  "checkers\\view.py": "3afe8af1069aba3ef41538b24a3f2a69a6a4282a560e204f9eb5252c00785ad4",
+  "checkers\\__init__.py": "0c699b0b44467dd9306746f5dc69d2e658111ce912d22c54fa3cb6b708304b1d",
+  "tests\\test_checkers.py": "2e287b03976bbe515e9fe325b20643ef97b6aa5d389ac690ef3a31f04daf1dfe",
+  "tests\\test_interface.py": "ec928ec487e12f7a7993498a2ed1c28f523143d9fbf244735a2b14bdc7cc71dd",
+  "tests\\test_search.py": "5bf1c807e3fa3391dcb70a261bbc6edb803f04efbe648d7fb72ee0490dd36d65"
+}

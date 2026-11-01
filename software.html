@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Phillip Gooden’s computer graphics capstone: graphical checkers, minimax search, and database persistence."><title>Software design and engineering | Phillip Gooden</title><link rel="stylesheet" href="styles.css"></head><body><a class="skip" href="#main">Skip to content</a><header><div class="header-inner"><a class="brand" href="index.html">Phillip Gooden<span>Computer graphics · CS 499</span></a><nav aria-label="Main navigation"><a href="index.html">Self-assessment</a><a href="software.html" aria-current="page">Design</a><a href="algorithms.html">Algorithms</a><a href="database.html">Database</a><a href="review.html">Code review</a><a href="downloads.html">Files</a></nav></div></header><main id="main"><p class="eyebrow">Enhancement 01 · Software design and engineering</p><h1>Separate the rules from the rendering.</h1><p class="lede">A graphical checkers project becomes a modular application with testable rules and a responsive canvas.</p><div class="toc"><a href="#narrative">Read narrative</a><a href="#source">Inspect code</a><a href="original.zip">Original artifact ZIP</a><a href="milestones-software_design.zip">Design milestone ZIP</a></div><div class="reading"><h2>The original artifact</h2><p>The IT 450 baseline combines game state, user interaction, and drawing. Its opponent applies rule-based filters and random selection. It does not contain the minimax implementation described in the earlier proposal.</p><h2>The enhancement</h2><p>Independent model, view, controller, opponent, and storage modules make responsibilities explicit. The canvas scales with the window, highlights legal moves, and reuses piece objects. JSON validation and legacy import protect the saved-position boundary.</p><p>Ten initial tests passed in the preserved design version. A repeated-render check retained 112 canvas objects after 100 redraws. These are targeted checks, not an exhaustive UI or security evaluation.</p></div><section id="narrative" class="section-rule"><a class="button secondary" href="documents/Software_Design_and_Engineering_Enhancement_Narrative_APA_Example_Style.docx">Download Word document (.docx)</a><article class="doc-body"><h2>Artifact and Purpose</h2><p>I selected the Python checkers project associated with my IT 450 coursework for my CS 499 ePortfolio. My earlier solution proposal was dated August 16, 2026. For this enhancement, the selected source baseline is Checkers_v24.py, supplied on November 1, 2026; its exact original creation date is not established. This version provides a two-dimensional board, standard and custom setups, human and computer play, and text-file saving and loading. Its computer opponent filters moves using rules and randomly chooses among the remaining options. The minimax and knowledge-base features discussed in the earlier proposal are not present in this baseline.</p><p>The artifact supports my focus on computer graphics because rendering, interaction, and visible game state are central to its use. The software design enhancement reorganizes the application so that graphics and rules can evolve independently. It also adds animated movement and legal-destination highlights. All seven supplied files were preserved in an original folder, and their copied contents were verified against the supplied files using SHA-256 hashes. The enhanced application is stored separately.</p><h2>Design Changes and Portfolio Value</h2><p>The original Tile class combines piece information with graphical objects, and constructing a tile immediately draws it. That design makes a game-state change dependent on a window. The enhanced model.py defines pieces, moves, legal actions, and turn transitions without importing the interface. view.py owns the canvas objects and coordinate conversion, while app.py coordinates user input and animation. Separate ai.py and storage.py modules contain opponent selection and persistence. These boundaries make responsibilities easier to identify and allow rules to be tested without opening a window.</p><p>The enhanced renderer scales the board with the window, marks legal destinations, and animates movement through timed callbacks. It reuses existing piece objects and deletes objects that are no longer needed. The controller invalidates pending animation or computer callbacks when the game is reset. This work demonstrates modular design, event-driven programming, resource management, and the connection between a reliable model and an understandable graphical interface.</p><h2>Correctness and Validation</h2><p>A concrete defect in the original capture routine helped establish the need for stronger separation and testing. The routine uses division to calculate list indexes. Under Python 3, those expressions produce floating-point values, and an isolated capture check reproduced a TypeError. The enhanced model represents board positions with integer coordinate pairs and explicitly removes the captured piece. Its legal-move interface also restricts a continuing capture to the same piece and handles positions where the current player has no legal action.</p><p>The enhanced application explicitly ends a turn when a pawn is crowned. This is a documented behavior change from the original implementation, which could continue capturing after promotion. The computer opponent also has a revised one-move heuristic that evaluates successor positions and uses random tie-breaking. These changes mean the enhancement is more than a structural refactor. Neither improved playing strength nor identical opponent behavior is claimed, and minimax remains part of the later algorithms milestone.</p><p>All 10 automated tests passed during initial validation on November 1, 2026. They cover standard move generation, mandatory and chained captures, rejection of an illegal move without mutation, promotion, backward king movement, blocked players, legal computer decisions, preservation of a capture continuation during saving and loading, legacy import, and selected invalid records. A separate hidden-window Tkinter smoke check verified coordinate round trips, animation completion, and reset during animation. Repeating the standard-board render 100 times held the canvas at 112 objects. That result supports bounded object use in that scenario; it does not establish a frame-rate improvement or complete interface correctness.</p><h2>Reflection on the Enhancement Process</h2><p>The central design lesson is that visible behavior depends on state management. Animating a piece introduces a period when its displayed position is changing while the logical move is still pending. The controller therefore blocks competing board actions during animation and uses a generation token to prevent callbacks from an older game from changing a reset game. Separating these concerns makes the behavior easier to reason about and gives future features a clearer place in the architecture.</p><p>Another lesson is that preserving an original artifact does not require preserving every defect or undocumented rule. Changes to capture handling, promotion, and opponent ordering need to be explained and checked separately from changes to appearance. The architecture and tests make those differences reviewable. This version does not yet include a documented instructor or peer feedback cycle. The next review should address usability, rule expectations, and the clarity of the module boundaries, with resulting revisions recorded in the milestone narrative.</p><h2>Course Outcome Alignment</h2><p>Collaborative environments are partially addressed. The separate modules, preserved baseline, tests, and setup instructions give another reviewer a concrete basis for discussion. They support future collaboration, but they do not establish that a team review has already occurred. Documented instructor or peer feedback and the changes made in response remain needed evidence for this outcome.</p><p>Professional communication is supported through the code-review outline, README, and this narrative. Legal-move highlights and animation communicate available actions and state changes visually. The code review video and complete portfolio presentation remain separate deliverables, so the communication outcome is still in progress across the capstone.</p><p>Designing and evaluating computing solutions is supported by the independent board model, explicit move representation, and checks of rule behavior. The design balances animation and input responsiveness against additional controller state. The current tests provide evidence of selected correctness properties, while advanced search and comparative algorithm benchmarks remain future work. I consider this outcome partially demonstrated by the software design enhancement.</p><p>Using computing techniques and tools is the strongest area of this milestone. Python data classes, modular components, Tkinter callbacks, repeatable unit tests, and controlled file replacement support a usable desktop application. The work provides concrete evidence of applying software engineering practices to a graphics-focused problem. A complete manual playthrough is still necessary before treating the application as fully evaluated.</p><p>A security mindset is demonstrated through validation at the save-file boundary. The loader checks record structure, coordinates, duplicate squares, piece attributes, counts, and capture continuation before the controller replaces the current game. New JSON saves retain the board, turn, and forced-capture state, and the application can import the original text format. Temporary-file replacement reduces the risk of leaving a partially written destination. These measures address specific integrity and input-handling concerns; they are not evidence of a comprehensive security audit.</p><h2>Remaining Work</h2><p>A full manual visual review and playthrough remain outstanding, including resizing, dialogs, setup, and human-versus-computer play. Opponent selection, resignation outcomes, and move history are not persisted. Database storage, replay, and minimax are later enhancements. Keeping those limits explicit helps the portfolio distinguish completed work from planned capabilities.</p><p>The original graphics.py identifies John Zelle as its author and includes GPL licensing information; its attribution is preserved with the original files. The enhanced interface uses Tkinter directly. Before submission, I need to review the implementation and narrative, complete the remaining evaluation, and incorporate instructor feedback.</p></article></section><section id="source" class="section-rule"><h2>Inspect the implementation</h2><details><summary>Original Checkers_v24.py</summary><p><a href="artifacts/original/Checkers_v24.py">Download source file</a></p><pre tabindex="0"><code>from graphics import *
+import sys
+from tkinter import messagebox as tkMessageBox
+#+-added to be able to select a random number from a range of numbers
+from random import randrange
+
+'''
+The revisions in the code are labelled by the prefix '#+-'
+'''
+class Checkers:
+    def __init__(s):
+        s.state = 'CustomSetup'
+        s.is1P = False
+        #+-added string
+        s.compIsColour = 'not playing'    #computer not playing by default
+        s.placeColour = 'White'
+        s.placeRank = 'Pawn'
+        s.placeType = 'Place'                   #Place or Delete (piece)
+        s.pTurn = 'White'                       #White or Black (turn)
+        
+        s.selectedTile = ''
+        s.selectedTileAt = []
+        s.hasMoved = False
+        s.pieceCaptured = False
+
+        s.BoardDimension = 8
+        s.numPiecesAllowed = 12
+
+        s.win = GraphWin('Checkers',600,600)    #draws screen
+        s.win.setBackground('White')
+        s.win.setCoords(-1,-3,11,9)              #creates a coordinate system for the window
+        s.ClearBoard()
+        
+        s.tiles = [[Tile(s.win,i,j,False) for i in range(s.BoardDimension)] for j in range(s.BoardDimension)]  #creates the 2D list and initializes all 8x8 entries to an empty tile
+
+        #+-added two lists
+        s.moves = []
+        s.badMoves = []
+
+        gridLetters = ['A','B','C','D','E','F','G','H',]
+        for i in range(s.BoardDimension):
+            Text(Point(-0.5,i+0.5),i+1).draw(s.win)                 #left and right numbers for grid
+            Text(Point(8.5,i+0.5),i+1).draw(s.win)
+            Text(Point(i+0.5,-0.5),gridLetters[i]).draw(s.win)      #bottom and top letters
+            Text(Point(i+0.5,8.5),gridLetters[i]).draw(s.win) 
+        
+        s.SetButtons()
+        
+        s.SetupBoard()
+	####
+    #handles the setup of the board (i.e. piece placement)
+	####
+    def SetupBoard(s):
+        while s.state == 'CustomSetup':
+            s.Click()
+        if s.state == 'Play':
+            s.Play()
+	####
+    #handles the general play of the game
+	####
+    def Play(s):
+        while s.state == 'Play':
+            #+-added if statement
+            if s.is1P and s.compIsColour == s.pTurn:
+                s.CompTurn()
+            else:
+                s.Click()
+        if s.state == 'CustomSetup':
+            s.SetupBoard()
+	####
+    #+-added to be able to control the computer's turn
+	####
+    def CompTurn(s):
+        s.moves = s.movesAvailable()
+        s.badMoves = []
+        #######consider making s.goodMoves which replaces s.badMoves for many uses (changes conditions a bit as well)
+
+        
+        #To prevent leaving the back row (currently top priority)
+        for move in s.moves:
+            if s.movesFromBack(move):
+                s.badMoves.append(move)
+        s.removeBadMoves()
+
+        #This may not always work, it is not expected/designed to (hopefully it usually works)
+        #It is meant to promote the use of moves that allow capture of another piece afterwards
+        for move in s.moves:
+            if not s.PieceCanCapture(s.moveEndsAt(move)[0],s.moveEndsAt(move)[1]):
+                s.badMoves.append(move)
+        s.removeBadMoves()
+
+        #Promotes move which make kings
+        for move in s.moves:
+            if not (((s.moveEndsAt(move)[1]==7 and s.tiles[move[0]][move[1]].isWhite) or \
+               (s.moveEndsAt(move)[1]==0 and s.tiles[move[0]][move[1]].isBlack)) and \
+                    s.tiles[move[0]][move[1]].isPawn):
+                s.badMoves.append(move)
+        s.removeBadMoves()
+
+
+        #Promotes moves which take kings for free
+        for move in s.moves:
+            if not ((s.tiles[move[2]][move[3]].isKing) and s.isMoveSafe(move)):
+                s.badMoves.append(move)
+        s.removeBadMoves()
+
+        #This may not always work, it is not expected/designed to (hopefully it usually works)
+        #Promotes moves which trade your pawn for opponent king
+        for move in s.moves:
+            if not ((s.tiles[move[0]][move[1]].isPawn) and (s.tiles[move[2]][move[3]].isKing) and not s.isMoveSafe(move)):
+                s.badMoves.append(move)
+        s.removeBadMoves()
+
+        #This may not always work, it is not expected/designed to (hopefully it usually works)
+        #Promotes moves which trade kings when ahead in ***pieces &lt;--might want to change classification of being ahead
+        for move in s.moves:
+            if not ((s.tiles[move[0]][move[1]].isKing) and (s.tiles[move[2]][move[3]].isKing) and not s.isMoveSafe(move) and s.hasMorePieces()):
+                s.badMoves.append(move)
+        s.removeBadMoves()
+
+        #This may not always work, it is not expected/designed to (hopefully it usually works)
+        #Promotes moves which trade pawns when ahead in ***pieces &lt;--might want to change classification of being ahead
+        for move in s.moves:
+            if not ((s.tiles[move[0]][move[1]].isPawn) and (s.tiles[move[2]][move[3]].isPawn) and not s.isMoveSafe(move) and s.hasMorePieces()):
+                s.badMoves.append(move)
+        s.removeBadMoves()
+
+        #Promotes moves which does not endanger itself needlessly
+        for move in s.moves:
+            if not s.isMoveSafe(move):
+                s.badMoves.append(move)
+        s.removeBadMoves()
+        
+        #should implement the next part to pick at random from the remaining moves (does not do this)
+        #performs the select and move action for the computer
+        m = randrange(0,len(s.moves))
+        if s.selectedTileAt == []:
+            s.Action(s.moves[m][0],s.moves[m][1])
+        s.Action(s.moves[m][2],s.moves[m][3])
+
+    ####
+	#+-added to determine whether the player whose turn it is has more pieces than opponent
+	####
+    def hasMorePieces(s):
+        return s.numColour(s.pTurn) &gt; s.numColour(s.opposite(s.pTurn))
+    
+    #+-added new method
+    #Returns true if a GIVEN piece cannot be taken immediately after ITS proposed move
+    #########Might want another method to know if a move exposes another piece
+    #Likely to not work (depends on how PieceCanCapturePiece method works)
+    def isMoveSafe(s,move):
+        X1,Y1 = [s.moveEndsAt(move)[0]-1,s.moveEndsAt(move)[0]+1],[s.moveEndsAt(move)[1]-1,s.moveEndsAt(move)[1]+1]
+        for i in range(2):
+            for j in range(2):
+                if s.SpecialPCCP(s.tiles[move[0]][move[1]].pieceColour,X1[i],Y1[j],s.moveEndsAt(move)[0],s.moveEndsAt(move)[1],move[0],move[1]):
+                    return False
+        return True
+
+    #+-added new method
+    #modification to PieceCanCapturePiece such that it works with the isMoveSafe method
+    def SpecialPCCP(s,piece2Colour,x,y,X,Y,initX,initY):
+
+        X1,X2,Y1,Y2 = [x-1,x+1],[x-2,x+2],[y-1,y+1],[y-2,y+2]
+        if ((0&lt;=X&lt;8) and (0&lt;=Y&lt;8)) and ((0&lt;=x&lt;8) and (0&lt;=y&lt;8)):
+            if (piece2Colour == s.opposite(s.tiles[x][y].pieceColour)):
+                if s.CanDoWalk(x,y,X,Y,exception=False):
+                    for i in range(2):
+                        for j in range(2):
+                            if X1[i]==X and Y1[j]==Y:
+                                if (0&lt;=X2[i]&lt;8) and (0&lt;=Y2[j]&lt;8):
+                                    if not (s.tiles[X2[i]][Y2[j]].isPiece) or (X2[i]==initX and Y2[j]==initY):
+                                        return True
+        return False
+
+    #+-added new method
+    #Removes badMoves from the list of moves that can be made
+    #if all of the moves that can be made are badMoves, we still need to do something so it leaves all of them
+    #Note: at any time this is run, the moves that are considered bad should be considered bad for the same reason (i.e. they are equivalently bad)
+    def removeBadMoves(s):  #assumes moves were added to badMoves in the same order as they appear in moves
+        if s.moves != s.badMoves:
+            for move in s.badMoves:
+                s.moves.remove(move)
+        s.badMoves = []
+
+    #+-added new method
+    def movesFromBack(s,move):
+        if (move[1]==0 and s.compIsColour=='White') or \
+               (move[1]==7 and s.compIsColour=='Black'):
+            return True
+        else:
+            return False
+
+    #+-added new method
+    def moveEndsAt(s,move): #takes 4 element array representing a move
+        if s.tiles[move[2]][move[3]].isPiece:
+            return [move[0]+(move[2]-move[0])*2,move[1]+(move[3]-move[1])*2]
+        else:
+            return [move[2],move[3]]
+    
+    #+-added to calculate all the available valid moves
+    def movesAvailable(s):
+        moves=[]
+        for j in range(8):
+            for i in range(8):
+                X1,Y1 = [i-1,i+1],[j-1,j+1]
+                for a in range(2):
+                    for b in range(2):
+                        if 0&lt;=X1[a]&lt;8 and 0&lt;=Y1[b]&lt;8:
+                            if s.moveIsValid(i,j,X1[a],Y1[b]):
+                                moves.append([i,j,X1[a],Y1[b]])
+        return moves
+                
+
+	#Resets the board to be empty
+    def ClearBoard(s):
+        s.tiles=[[Tile(s.win,i,j,False) for i in range(s.BoardDimension)] for j in range(s.BoardDimension)]  #creates the 2D list and initializes all 8x8 entries to an empty tile
+        for i in range(s.BoardDimension):
+            for j in range(s.BoardDimension):
+                s.ColourButton(s.TileColour(i,j),i,j)
+        s.state = 'CustomSetup'
+        s.pTurn = 'White'
+        s.SetButtons()
+
+    def ColourButton(s,colour,X,Y,width=1,height=1):        #function to create a rectangle with a given colour, size, and location
+        rect = Rectangle(Point(X,Y),Point(X+width,Y+height))
+        rect.setFill(colour)
+        rect.draw(s.win)
+            
+    def TileColour(s,x,y):
+        if (x%2 == 0 and y%2 == 0) or (x%2 == 1 and y%2 == 1):
+            return 'Red'   #sets every other square to red 
+        else:
+            return 'White' #every non red square to white
+
+    ##########
+    #Draws Buttons
+    ##########    
+    def SetButtons(s):
+        s.ColourButton('White',-1,-3,12,2)
+        s.ColourButton('White',9,-1,2,10)
+
+        if s.state == 'CustomSetup':
+            s.DrawStandard()
+            s.DrawStart()
+            s.DrawClear()
+            s.Draw1P()
+            s.Draw2P()
+            s.DrawLoad()
+            s.DrawSave()
+            s.DrawTurn()
+            s.DrawX()
+            
+            s.DrawW()
+            s.DrawB()
+            s.DrawK()
+            s.DrawDel()
+
+            s.DrawScore() #not actually a button
+        elif s.state == 'Play':
+            #+-updated method name
+            s.DrawResign()
+            s.DrawSave()
+            s.DrawTurn()
+            s.DrawX()
+
+            s.DrawScore() #not actually a button
+
+
+    def DrawStandard(s):
+        s.ColourButton('White',-1,-2,2,1)    #Standard Setup button
+        Text(Point(0,-1.3),'Standard').draw(s.win)
+        Text(Point(0,-1.7),'Setup').draw(s.win)
+    def DrawCustom(s):
+        s.ColourButton('White',-1,-3,2,1)    #Custom Setup button
+        Text(Point(0,-2.3),'Custom').draw(s.win)  
+        Text(Point(0,-2.7),'Setup').draw(s.win)
+    def DrawStart(s):
+        s.ColourButton('Yellow',1,-2)    #Start! button
+        Text(Point(1.5,-1.5),'Start!').draw(s.win)
+    def DrawClear(s):
+        s.ColourButton('White',-1,-3,2,1)    #Clear Board button
+        Text(Point(0,-2.3),'Clear').draw(s.win)
+        Text(Point(0,-2.7),'Board').draw(s.win)
+    def Draw1P(s):
+        col = 'Red'
+        if s.is1P:
+            s.DrawCompColour()
+        else:
+            s.ColourButton(col,3,-2,2,1)    #1Player   -- (1AI)
+            Text(Point(4,-1.3),'1Player').draw(s.win)
+            Text(Point(4,-1.7),'Game').draw(s.win)
+    def DrawCompColour(s):
+        s.ColourButton(s.compIsColour,3,-2,2,1)
+        txt1 = Text(Point(4,-1.3),'Comp Is')
+        txt2 = Text(Point(4,-1.7),s.compIsColour)
+        txt1.draw(s.win)
+        txt2.draw(s.win)
+        txt1.setFill(s.opposite(s.compIsColour))
+        txt2.setFill(s.opposite(s.compIsColour))
+    def Draw2P(s):#2Player
+        col = 'Green'
+        if s.is1P:
+            col = 'Red'
+        s.ColourButton(col,3,-3,2,1)    
+        Text(Point(4,-2.3),'2Player').draw(s.win)  
+        Text(Point(4,-2.7),'Game').draw(s.win)
+    def DrawLoad(s):#Load
+        s.ColourButton('White',6,-3,2,1)    
+        Text(Point(7,-2.5),'Load').draw(s.win)
+    def DrawSave(s):    #Save
+        s.ColourButton('White',8,-3,2,1)
+        Text(Point(9,-2.5),'Save').draw(s.win)
+    def DrawX(s):#X
+        s.ColourButton('Red',10,-3)    
+        Exit_txt = Text(Point(10.5,-2.5),'X')
+        Exit_txt.draw(s.win)
+        Exit_txt.setFill('White')
+    def DrawW(s):#W
+        col = 'Green'
+        if s.placeColour != 'White':
+            col = 'Red'
+        s.ColourButton(col,6,-2)    
+        Text(Point(6.5,-1.5),'W').draw(s.win)
+    def DrawB(s):#B
+        col = 'Red'
+        if s.placeColour != 'White':
+            col = 'Green'
+        s.ColourButton(col,7,-2)    
+        Text(Point(7.5,-1.5),'B').draw(s.win)
+    def DrawK(s): #K
+        col = 'Red'
+        if s.placeRank == 'King':
+            col = 'Green'
+        s.ColourButton(col,8,-2) 
+        Text(Point(8.5,-1.5),'K').draw(s.win)
+    def DrawDel(s):#Del
+        col1 = 'Black'#square colour
+        col2 = 'White'#text colour
+        if s.placeType == 'Delete':
+            col1 = 'Green'
+            col2 = 'Black'        
+        s.ColourButton(col1,9,-2)    
+        deleteTxt = Text(Point(9.5,-1.5),'Del')
+        deleteTxt.draw(s.win)
+        deleteTxt.setFill(col2)
+    def DrawResign(s):
+        s.ColourButton('White',6,-3,2,1)    #Load
+        Text(Point(7,-2.5),'Resign').draw(s.win)
+    def DrawTurn(s):
+        col1 = 'White'
+        col2 = 'Black'
+        if s.pTurn == 'Black':
+            col1 = 'Black'
+            col2 = 'White'
+        s.ColourButton(col1,9,8,2,1)    #Standard Setup button
+        txt1 = Text(Point(10,8.7),col1)
+        txt2 = Text(Point(10,8.3),'Turn')
+        txt1.draw(s.win)
+        txt2.draw(s.win)
+        txt1.setFill(col2)
+        txt2.setFill(col2)
+    def DrawScore(s): # draw score
+        Text(Point(10,7.5),'# White').draw(s.win)
+        Text(Point(10,7.1),'Pieces:').draw(s.win)
+        Text(Point(10,6.7),s.numColour('White')).draw(s.win)
+        Text(Point(10,5.9),'# Black').draw(s.win)
+        Text(Point(10,5.5),'Pieces').draw(s.win)
+        Text(Point(10,5.1),s.numColour('Black')).draw(s.win)
+                 
+    def Click(s):
+        click = s.win.getMouse()        #Perform mouse click
+        X, Y = s.ClickedSquare(click)   #Gets click coords
+        s.Action(X,Y)
+        
+    def Action(s,X,Y):      #performs action for the location X,Y --essentially means user clicked there or computer is 'clicked' there
+        if s.state == 'CustomSetup':
+            s.clickInCustom(X,Y)
+        elif s.state == 'Play':
+            s.clickInPlay(X,Y)
+            
+    def clickInCustom(s,X,Y):
+        #+-added X button if statement
+        if (10&lt;=X&lt;11 and -3&lt;=Y&lt;-2): #X clicked
+            ExitGame(s.win)
+        elif (-1&lt;=X&lt;1 and -2&lt;=Y&lt;-1): #Standard clicked
+            s.StandardSetup()  
+        elif (1&lt;=X&lt;2 and -2&lt;=Y&lt;-1): #Start! clicked
+            num_wh = s.numColour('White')
+            num_bl = s.numColour('Black')
+            if ((num_wh == 0) and (num_bl == 0)): #This means there are no pieces on the board; this is a pointless setup.
+                tkMessageBox.showinfo("Error", "No pieces have been placed!")
+            else:
+                s.state = 'Play'
+                s.SetButtons()
+        elif (-1&lt;=X&lt;1 and -3&lt;=Y&lt;-2): #Clear Board clicked
+            s.ClearBoard()
+        #+-added 1Player and Comp Is if statements
+        elif (3&lt;=X&lt;5 and -2&lt;=Y&lt;-1 and not s.is1P): #1Player clicked
+            s.is1P = True
+            s.compIsColour = 'White'
+            s.SetButtons()
+        elif (3&lt;=X&lt;5 and -2&lt;=Y&lt;-1 and s.is1P): #'Comp Is' button clicked --requires the user to have already designated it to be a 1 player game, else the option is not available
+            s.compIsColour = s.opposite(s.compIsColour)
+            s.SetButtons()
+        elif (3&lt;=X&lt;5 and -3&lt;=Y&lt;-2): #2Player clicked
+            s.is1P = False
+            s.SetButtons()
+        elif (8&lt;=X&lt;10 and -3&lt;=Y&lt;-2): #Save clicked
+            s.SaveSetupToFile()
+        elif (6&lt;=X&lt;8 and -3&lt;=Y&lt;-2): #Load clicked
+            s.LoadSetupFromFile()
+        elif (9&lt;=X&lt;11 and 8&lt;=Y&lt;9): #pTurn button clicked during CustomSetup
+            s.pTurn = s.opposite(s.pTurn)
+            s.SetButtons()
+        elif (6&lt;=X&lt;7 and -2&lt;=Y&lt;-1): #W clicked
+            s.placeColour = 'White'
+            s.placeType = 'Place'
+            s.SetButtons()
+        elif (7&lt;=X&lt;8 and -2&lt;=Y&lt;-1): #B clicked
+            s.placeColour = 'Black'
+            s.placeType = 'Place'
+            s.SetButtons()
+        elif (8&lt;=X&lt;9 and -2&lt;=Y&lt;-1): #K clicked
+            s.placeRank = s.opposite(s.placeRank)
+            s.placeType = 'Place'
+            s.SetButtons()
+        elif (9&lt;=X&lt;10 and -2&lt;=Y&lt;-1): #Del clicked
+            s.placeType = s.opposite(s.placeType)
+            s.SetButtons()
+        elif (0&lt;=X&lt;8 and 0&lt;=Y&lt;8): #Tile clicked in CustomSetup
+            if s.tiles[X][Y].TileColour(X,Y) == 'White': #Clicked tile is White
+                tkMessageBox.showinfo("Error", "Illegal Placement")
+            elif s.numColour(s.placeColour) &gt;= s.numPiecesAllowed and s.placeType == 'Place': #clicked tile would result in too many of colour being placed
+                tkMessageBox.showinfo("Error", "Illegal Placement")
+            elif (Y == 7 and s.placeColour == 'White' and not(s.placeRank == 'King')) or (Y == 0 and s.placeColour == 'Black' and not(s.placeRank == 'King')): #placing a non-king on a king square
+                tkMessageBox.showinfo("Error", "Illegal Placement")
+            else: #Valid tile update action (i.e. piece placement or deletion)
+                s.tiles[X][Y] = Tile(s.win,X,Y,s.placeType == 'Place',s.placeColour,s.placeRank)    #updates that square in array
+                s.SetButtons()
+
+	#Handles mouse clicks
+    def clickInPlay(s,X,Y):
+        #+-added X and Save clicked if statements
+        if (10&lt;=X&lt;11 and -3&lt;=Y&lt;-2): #X clicked
+            ExitGame(s.win)
+        elif (8&lt;=X&lt;10 and -3&lt;=Y&lt;-2): #Save clicked
+            s.SaveSetupToFile()
+        elif (6&lt;=X&lt;8 and -3&lt;=Y&lt;-2): #Resign clicked
+        #+-added message box indicating which player had quit/resigned
+            tkMessageBox.showinfo("Resignation", str(s.pTurn) + ' has resigned! ' + str(s.opposite(s.pTurn)) + ' wins!')
+            s.state = 'CustomSetup'
+            s.SetButtons()
+        elif (0&lt;=X&lt;8 and 0&lt;=Y&lt;8): #Tile Clicked in Play
+            if s.selectedTileAt != []: #move if able
+                if s.selectedTileAt[0] == X and s.selectedTileAt[1] == Y and not s.pieceCaptured: #Re-Selecting the already selected piece de-selects it
+                    s.selectedTileAt = []
+                    s.tiles[X][Y] = Tile(s.win,X,Y,s.tiles[X][Y].isPiece,s.tiles[X][Y].pieceColour,s.tiles[X][Y].pieceRank)
+                elif s.pTurn == s.tiles[X][Y].pieceColour and not s.pieceCaptured and (s.PieceCanCapture(X,Y) or not s.PlayerCanCapture()): 
+                    s.tiles[s.selectedTileAt[0]][s.selectedTileAt[1]] = Tile(s.win,s.selectedTileAt[0],s.selectedTileAt[1],s.tiles[s.selectedTileAt[0]][s.selectedTileAt[1]].isPiece,s.tiles[s.selectedTileAt[0]][s.selectedTileAt[1]].pieceColour,s.tiles[s.selectedTileAt[0]][s.selectedTileAt[1]].pieceRank)
+                    s.selectedTileAt = [X,Y]
+                    s.tiles[X][Y] = Tile(s.win,X,Y,s.tiles[X][Y].isPiece,s.tiles[X][Y].pieceColour,s.tiles[X][Y].pieceRank,isSelected=True)
+                elif s.moveIsValid(s.selectedTileAt[0],s.selectedTileAt[1],X,Y):
+#####################+-added extra code here
+                    if s.tiles[X][Y].isPiece:
+                        X=X+(X-s.selectedTileAt[0])
+                        Y=Y+(Y-s.selectedTileAt[1])
+############################################################                        
+                    s.move(s.selectedTileAt[0],s.selectedTileAt[1],X,Y)
+                    if not (s.pieceCaptured and s.PieceCanCapture(X,Y)):
+                        s.pieceCaptured = False
+                        s.selectedTileAt = []
+                        s.pTurn = s.opposite(s.pTurn)
+                        s.SetButtons()
+                        #+-added if statement to check defeat
+                        if s.movesAvailable() == [] and s.numColour(s.pTurn):
+                            tkMessageBox.showinfo("Defeat", str(s.pTurn) + ' has no available moves! ' + str(s.opposite(s.pTurn)) + ' wins!')
+                            s.state = 'CustomSetup'
+                            s.SetButtons()
+
+                else:
+                    tkMessageBox.showinfo("Error", "Cannot perform that action.")
+            else: #Select a Piece to move
+                if s.pTurn != s.tiles[X][Y].pieceColour:
+                    tkMessageBox.showinfo("Error", "Select a piece of current player's colour")
+                elif (not s.PieceCanCapture(X,Y)) and s.PlayerCanCapture():
+                    tkMessageBox.showinfo("Error", "Invalid selection, current player must take a piece")
+                else:
+                    s.selectedTileAt = [X,Y]
+                    s.tiles[X][Y] = Tile(s.win,X,Y,s.tiles[X][Y].isPiece,s.tiles[X][Y].pieceColour,s.tiles[X][Y].pieceRank,isSelected=True)
+
+    #+-added to determine whether the tile attempting to be selected is valid
+    def validTileSelect(s,X,Y):
+        if (0&lt;=X&lt;8 and 0&lt;=Y&lt;8): #Tile Clicked in Play
+            if s.selectedTileAt != []: #move if able
+                if s.selectedTileAt[0] == X and s.selectedTileAt[1] == Y and not s.pieceCaptured: #Re-Selecting the already selected piece de-selects it
+                    return False
+                elif s.pTurn == s.tiles[X][Y].pieceColour and not s.pieceCaptured and (s.PieceCanCapture(X,Y) or not s.PlayerCanCapture()): 
+                    return True
+                elif s.moveIsValid(s.selectedTileAt[0],s.selectedTileAt[1],X,Y):
+                    return False
+                else:
+                    return False
+            else: #Select a Piece to move
+                if s.pTurn != s.tiles[X][Y].pieceColour:
+                    return False
+                elif (not s.PieceCanCapture(X,Y)) and s.PlayerCanCapture():
+                    return False
+                else:
+                    return True
+        else:
+            return False
+
+    #+-added to determine whether the tile attempting to be moved to is valid
+    def validTileMove(s,X,Y):
+        if (0&lt;=X&lt;8 and 0&lt;=Y&lt;8): #Tile Clicked in Play
+            if s.selectedTileAt != []: #move if able
+                if s.selectedTileAt[0] == X and s.selectedTileAt[1] == Y and not s.pieceCaptured: #Re-Selecting the already selected piece de-selects it
+                    return False
+                elif s.pTurn == s.tiles[X][Y].pieceColour and not s.pieceCaptured and (s.PieceCanCapture(X,Y) or not s.PlayerCanCapture()): 
+                    return False
+                elif s.moveIsValid(s.selectedTileAt[0],s.selectedTileAt[1],X,Y):
+                    return True
+                else:
+                    return False
+            else: #Selecting a Piece to move
+                return False
+        else:
+            False 
+
+    def moveIsValid(s,x,y,X,Y): #parameters -&gt; self,starting x,starting y,final X,final Y
+        #+-added if statement to ensure it the selected piece's turn
+        if s.tiles[x][y].pieceColour == s.pTurn:
+            if s.tiles[X][Y].pieceColour == s.opposite(s.pTurn): #valid if can jump target piece
+                return s.PieceCanCapturePiece(x,y,X,Y)
+            elif s.PieceCanJumpTo(x,y,X,Y): #valid if can jump to target location
+                return True
+            elif s.CanDoWalk(x,y,X,Y) and not s.PlayerCanCapture(): #valid if piece can travel to X,Y normally and PlayerCanCapture==False
+                return True
+            else:
+                return False
+
+########
+# This Function Enables a Piece to move. Trace Back --&gt; Requirement 1.3
+########
+    def move(s,x,y,X,Y): #parameters -&gt; self,starting x,starting y,final X,final Y      assumes valid move as input           
+        s.tiles[X][Y] = Tile(s.win,X,Y,True,s.tiles[x][y].pieceColour,s.tiles[x][y].pieceRank)
+
+        if (Y==7 and s.tiles[X][Y].isWhite) or \
+           (Y==0 and s.tiles[X][Y].isBlack):
+            s.tiles[X][Y].pieceRank = 'King'
+
+        s.tiles[X][Y] = Tile(s.win,X,Y,True,s.tiles[X][Y].pieceColour,s.tiles[X][Y].pieceRank)
+        s.tiles[x][y] = Tile(s.win,x,y,isPiece=False)
+        if X-x == 2 or X-x == -2:
+            if s.numColour(s.tiles[x+(X-x)/2][y+(Y-y)/2].pieceColour) == 1:
+                tkMessageBox.showinfo("Winner", str(s.tiles[X][Y].pieceColour) + ' Wins!')
+                #+-updated to allow another game to be played after a winner is declared
+                s.state = 'CustomSetup'
+                s.SetButtons()
+            s.tiles[x+(X-x)/2][y+(Y-y)/2] = Tile(s.win,x+(X-x)/2,y+(Y-y)/2,isPiece=False)
+
+            s.tiles[X][Y] = Tile(s.win,X,Y,True,s.tiles[X][Y].pieceColour,s.tiles[X][Y].pieceRank)
+            if s.PieceCanCapture(X,Y):
+                s.tiles[X][Y] = Tile(s.win,X,Y,True,s.tiles[X][Y].pieceColour,s.tiles[X][Y].pieceRank,isSelected=True)
+
+            s.selectedTileAt = [X,Y]
+            s.pieceCaptured = True
+        else:
+            s.selectedTileAt = []
+            
+            s.tiles[X][Y] = Tile(s.win,X,Y,True,s.tiles[X][Y].pieceColour,s.tiles[X][Y].pieceRank)
+            s.pieceCaptured = False
+                 
+#the below few functions need conditions added to handle out of bounds errors (for being off grid, i.e. 0&lt;=X&lt;8 or 0&lt;=Y&lt;8 doesn't hold)      &lt;--- I think this is handled in PieceCanCapturePiece      
+    def PlayerCanCapture(s):
+        for i in range(s.BoardDimension):
+            for j in range(s.BoardDimension):
+                if s.pTurn == s.tiles[i][j].pieceColour: #Current piece belongs to current player
+                    if s.PieceCanCapture(i,j):
+                        return True
+        return False
+
+    def PieceCanCapture(s,x,y):
+        X1,X2,Y1,Y2 = [x-1,x+1],[x-2,x+2],[y-1,y+1],[y-2,y+2]
+
+        for i in range(2):
+            for j in range(2):
+                if s.PieceCanCapturePiece(x,y,X1[i],Y1[j]):
+                    return True
+        return False
+
+#########
+# This Function enables a tile to capture and remove an opponent piece. Trace Back --&gt; Requirement 1.5
+#########
+    def PieceCanCapturePiece(s,x,y,X,Y):
+        X1,X2,Y1,Y2 = [x-1,x+1],[x-2,x+2],[y-1,y+1],[y-2,y+2]
+        #+-added first two if conditions
+        if ((0&lt;=X&lt;8) and (0&lt;=Y&lt;8)) and ((0&lt;=x&lt;8) and (0&lt;=y&lt;8)):
+            if (s.tiles[x][y].pieceColour == s.opposite(s.tiles[X][Y].pieceColour)):
+                if s.CanDoWalk(x,y,X,Y,exception=True):
+                    for i in range(2):
+                        for j in range(2):
+                            if X1[i]==X and Y1[j]==Y:
+                                if (0&lt;=X2[i]&lt;8) and (0&lt;=Y2[j]&lt;8):
+                                    if not (s.tiles[X2[i]][Y2[j]].isPiece):
+                                        return True
+        return False
+
+############
+# This Function enables a tile to jump over opponent piece. Trace Back --&gt; Requirement 1.5
+############
+    def PieceCanJumpTo(s,x,y,X,Y):
+        X1,X2,Y1,Y2 = [x-1,x+1],[x-2,x+2],[y-1,y+1],[y-2,y+2]
+        for i in range(2):
+            for j in range(2):
+                if X2[i]==X and Y2[j]==Y:
+                    if s.PieceCanCapturePiece(x,y,X1[i],Y1[j]):
+                        return True
+        return False
+
+########
+# This Function enables a king to move front and back. Trace Back --&gt; Requirement 1.5
+######## 
+    def CanDoWalk(s,x,y,X,Y,exception=False): #The final parameter is to add a special case such that PieceCanCapturePiece may use this method
+        X1,Y1 = [x-1,x+1],[y-1,y+1]
+
+        for i in range(2):
+            for j in range(2):
+                if X1[i]==X and Y1[j]==Y:
+                    if (0&lt;=X&lt;8) and (0&lt;=Y&lt;8):
+                        if(s.tiles[x][y].isWhite and j==1) or \
+                            (s.tiles[x][y].isBlack and j==0) or \
+                            (s.tiles[x][y].isKing):
+                            if not(exception or s.tiles[X][Y].isPiece) or \
+                               (exception and s.tiles[X][Y].isPiece and \
+                               (s.pTurn != s.tiles[X][Y].pieceColour)):
+                                return True
+        return False
+
+##########
+# This Function launches the standard/original setup of the board. Trace Back --&gt; Requirement 1.1
+##########
+    def StandardSetup(s): #defines the standard button
+        s.ClearBoard()
+        s.state = 'CustomSetup' #in custom mode
+        for i in range(s.BoardDimension):
+            for j in range(s.BoardDimension):
+                if s.tiles[i][j].TileColour(i,j) == 'Red' and (j &lt; 3):
+                    s.tiles[i][j] = Tile(s.win,i,j,True,'White','Pawn')
+                if s.tiles[i][j].TileColour(i,j) == 'Red' and (j &gt; 4):
+                    s.tiles[i][j] = Tile(s.win,i,j,True,'Black','Pawn')
+                    #places all the pieces in default checkers postitions
+
+    def numColour(s,colour): #counts the number of pieces of a given colour
+        c = 0 #initiate counter
+        for i in range(s.BoardDimension):
+            for j in range(s.BoardDimension):
+                if colour=='White' and s.tiles[i][j].isWhite:
+                    c += 1
+                elif colour=='Black' and s.tiles[i][j].isBlack:
+                    c += 1
+        return c
+
+    def opposite(s,opp): #Returns the 'opposite' of a given parameter (only works for specific things)
+        if opp == 'White':
+            return 'Black'
+        elif opp == 'Black':
+            return 'White'
+        
+        elif opp == 'King':
+            return 'Pawn'
+        elif opp == 'Pawn':
+            return 'King'
+
+        elif opp == 'Place':
+            return 'Delete'
+        elif opp == 'Delete':
+            return 'Place'
+        else:
+            #+-returns instead of printing error message
+            return opp
+        
+    #####
+    #function returns the bottom left coordinate of the square clicked
+    #####
+    def ClickedSquare(s,click):   
+        try:
+            clickX = click.getX()
+            clickY = click.getY()
+            if clickX &lt; 0:
+                clickX = int(clickX)-1
+            else:
+                clickX = int(clickX)
+            if clickY &lt; 0:
+                clickY = int(clickY)-1
+            else:
+                clickY = int(clickY)
+            return clickX, clickY
+        except IndexError:          #some positions on the outskirts of the screen are invalid locations
+            s.Click()
+
+#######
+# This Function Saves the game to be resumed later. Trace back --&gt; Requirement 1.6
+#######
+    def SaveSetupToFile(s):   #method writes the tiles array to file checkers.txt
+        # can have a dialog box to ask for the text file name to save to
+        saveFile = open ('checkers.txt' , 'w') #opens file to write
+        for i in range(s.BoardDimension):
+            for j in range(s.BoardDimension):
+                if (s.tiles[i][j].isPiece):
+                    i_string = str(i)
+                    j_string = str(j)
+                    saveFile.write(i_string + j_string + str(s.tiles[i][j].pieceColour)[0] + \
+                                   str(s.tiles[i][j].pieceRank)[0] + "\n")
+        saveFile.write(s.pTurn[0]) #saves whose turn it is too
+        tkMessageBox.showinfo("Saved Complete", "Game setup was saved to checkers.txt")
+        saveFile.close()
+
+##########################
+#Function LoadSetupFromFile(s) corresponds to Requirement 1.2
+##########################
+    def LoadSetupFromFile(s): #method gets the setup saved and places pieces accordingly
+        loadFile = open ('checkers.txt' , 'r') #opens file to read
+        piece_list = loadFile.readlines()
+        tkMessageBox.showinfo("Loading", "Will now clear the board and \nplace the saved setup")
+        s.ClearBoard()
+        for i in range(len(piece_list) - 1):
+            tot_string = piece_list[i]
+            x_var = int(tot_string[0])
+            y_var = int(tot_string[1])
+            #checks the text file, with these specific letters signifying what each piece is
+            #first letter - 'W' is white, 'B' is black
+            #second letter - 'K' is a King piece, 'P' is a pawn piece
+            if (tot_string[2] == 'W'): #it is a white piece
+                if (tot_string[3] == 'K'): #it is a white King piece
+                    s.tiles[x_var][y_var] = Tile(s.win,x_var,y_var,True,'White','King')
+                else : #piece is a white pawn
+                    assert(tot_string[3] == 'P')
+                    s.tiles[x_var][y_var] = Tile(s.win,x_var,y_var,True,'White','Pawn')
+            else: #piece is black
+                assert(tot_string[2] == 'B')
+                if (tot_string[3] == 'K'): #piece is a black King
+                    s.tiles[x_var][y_var] = Tile(s.win,x_var,y_var,True,'Black','King')
+                else: #piece is a black pawn
+                    assert(tot_string[3] == 'P')
+                    s.tiles[x_var][y_var] = Tile(s.win,x_var,y_var,True,'Black','Pawn')
+        #whose turn it was is restored
+        if (piece_list[len(piece_list)-1] == 'W'): #it is white's turn
+            s.pTurn = 'White'
+        else: #it is black's turn
+            s.pTurn = 'Black'
+        s.SetButtons()
+        loadFile.close()
+
+
+'''
+# We took out Class Piece from Checkers_v6 and implemented Class Tile in Checkers_v18.
+    This was done to ensure a seamless transition for when the game actually ran.
+'''
+##########
+#defines a tile and holds its current state
+##########
+
+class Tile:
+    def __init__(s,win,X,Y,isPiece,pieceColour='',pieceRank='',isSelected=False):
+        s.win = win
+        s.x = X
+        s.y = Y
+        s.isPiece = isPiece
+        s.isWhite = ('White' == pieceColour) and s.isPiece
+        s.isBlack = ('Black' == pieceColour) and s.isPiece
+        s.isKing = ('King' == pieceRank) and s.isPiece
+        s.isPawn = ('Pawn' == pieceRank) and s.isPiece
+
+        s.pieceColour=''
+        s.pieceRank=''
+        if s.isWhite:
+            s.pieceColour = 'White'
+        elif s.isBlack:
+            s.pieceColour = 'Black'
+        if s.isKing:
+            s.pieceRank = 'King'
+        elif s.isPawn:
+            s.pieceRank = 'Pawn'
+
+        s.c = Point(s.x+.5,s.y+.5)
+        s.circ = Circle(s.c,0.4)
+
+        if isSelected:
+            s.circ.setOutline('Yellow')
+        else:
+            s.circ.setOutline('Black')
+            s.circ.undraw()
+
+        s.kingTxt = Text(s.c,'K')
+        s.kingTxt.undraw()
+
+        s.ColourButton(s.TileColour(s.x,s.y),s.x,s.y)
+        if s.isPiece:
+            s.DrawPiece()
+##########
+#function to create a rectangle with a given colour, size, and location
+##########
+    def ColourButton(s,colour,X,Y,width=1,height=1):
+        rect = Rectangle(Point(X,Y),Point(X+width,Y+height))
+        rect.setFill(colour)
+        rect.draw(s.win)
+        
+##########
+#Tiles on the board
+##########        
+    def TileColour(s,x,y):
+        if (x%2 == 0 and y%2 == 0) or (x%2 == 1 and y%2 == 1):
+            return 'Red'   #sets every other square to red 
+        else:
+            return 'White' #every non red square to white
+
+##########
+#Displays White or Black or King Pieces
+##########
+    def DrawPiece(s):
+        s.circ.draw(s.win)
+
+        if s.isWhite:
+            col1,col2 = 'White','Black'
+        elif s.isBlack:
+            col1,col2 = 'Black','White'
+
+        s.circ.setFill(col1)
+
+        if s.isKing:
+            s.kingTxt.draw(s.win)
+            s.kingTxt.setFill(col2)
+
+##########
+#Quit
+##########
+def ExitGame(win):
+    win.close()
+    sys.exit()
+    
+game = Checkers()
+</code></pre></details><details><summary>Enhanced rules and state</summary><p><a href="artifacts/milestones/software_design/checkers/model.py">Download source file</a></p><pre tabindex="0"><code>"""American checkers rules; no window, disk access, or global mutable state."""
+from dataclasses import dataclass, field
+from typing import Optional
+
+Square = tuple[int, int]
+
+
+@dataclass(frozen=True)
+class Piece:
+    color: str
+    king: bool = False
+
+
+@dataclass(frozen=True)
+class Move:
+    start: Square
+    end: Square
+    captured: Optional[Square] = None
+
+
+@dataclass
+class Game:
+    board: dict[Square, Piece] = field(default_factory=dict)
+    turn: str = 'White'
+    forced: Optional[Square] = None
+    winner: Optional[str] = None
+
+    @classmethod
+    def standard(cls):
+        return cls({(x, y): Piece('White' if y &lt; 3 else 'Black')
+                    for x in range(8) for y in range(8)
+                    if (x + y) % 2 == 0 and (y &lt; 3 or y &gt; 4)})
+
+    @staticmethod
+    def inside(square):
+        return all(0 &lt;= n &lt; 8 for n in square)
+
+    def candidates(self, square, captures_only=False):
+        piece = self.board.get(square)
+        if not piece or piece.color != self.turn:
+            return []
+        x, y = square
+        directions = (-1, 1) if piece.king else ((1,) if piece.color == 'White' else (-1,))
+        moves = []
+        for dy in directions:
+            for dx in (-1, 1):
+                near, far = (x + dx, y + dy), (x + 2 * dx, y + 2 * dy)
+                other = self.board.get(near)
+                if other and other.color != piece.color and self.inside(far) and far not in self.board:
+                    moves.append(Move(square, far, near))
+                elif not captures_only and self.inside(near) and near not in self.board:
+                    moves.append(Move(square, near))
+        return moves
+
+    def legal_moves(self):
+        if self.winner:
+            return []
+        if self.forced is not None:
+            return self.candidates(self.forced, captures_only=True)
+        moves = [move for square in self.board for move in self.candidates(square)]
+        captures = [move for move in moves if move.captured is not None]
+        return captures or moves
+
+    def apply(self, move):
+        if move not in self.legal_moves():
+            raise ValueError('That move is not legal.')
+        piece = self.board.pop(move.start)
+        if move.captured is not None:
+            del self.board[move.captured]
+        crowned = not piece.king and move.end[1] == (7 if piece.color == 'White' else 0)
+        self.board[move.end] = Piece(piece.color, piece.king or crowned)
+        # American checkers ends the turn on crowning, even if a king could jump back.
+        if move.captured is not None and not crowned and self.candidates(move.end, True):
+            self.forced = move.end
+        else:
+            self.forced = None
+            self.turn = 'Black' if self.turn == 'White' else 'White'
+            if not self.legal_moves():
+                self.winner = piece.color
+
+    def resolve_terminal(self):
+        if not self.legal_moves():
+            self.winner = 'Black' if self.turn == 'White' else 'White'
+</code></pre></details><details><summary>Enhanced canvas rendering</summary><p><a href="artifacts/milestones/software_design/checkers/view.py">Download source file</a></p><pre tabindex="0"><code>"""Canvas renderer: owns drawing objects and coordinate conversion."""
+import tkinter as tk
+
+
+class BoardView(tk.Canvas):
+    def __init__(self, parent, on_square):
+        super().__init__(parent, background='#16202b', highlightthickness=0, width=640, height=640)
+        self.squares = [self.create_rectangle(0, 0, 0, 0, outline='') for _ in range(64)]
+        self.pieces = {}
+        self.overlays = []
+        self.snapshot = None
+        self.selected = None
+        self.moves = []
+        self.bind('&lt;Button-1&gt;', lambda event: on_square(self.square_at(event.x, event.y)))
+        self.bind('&lt;Configure&gt;', self.resize)
+
+    def geometry(self):
+        side = max(8, min(self.winfo_width(), self.winfo_height()) - 32)
+        return (self.winfo_width() - side) / 2, (self.winfo_height() - side) / 2, side / 8
+
+    def center(self, square):
+        left, top, size = self.geometry()
+        x, y = square
+        return left + (x + .5) * size, top + (7 - y + .5) * size
+
+    def square_at(self, px, py):
+        left, top, size = self.geometry()
+        x, row = int((px-left)//size), int((py-top)//size)
+        return (x, 7-row) if 0 &lt;= x &lt; 8 and 0 &lt;= row &lt; 8 else None
+
+    def resize(self, event=None):
+        left, top, size = self.geometry()
+        for y in range(8):
+            for x in range(8):
+                item = self.squares[y*8+x]
+                px, py = left+x*size, top+(7-y)*size
+                self.coords(item, px, py, px+size, py+size)
+                self.itemconfigure(item, fill='#374c58' if (x+y)%2 == 0 else '#d9e1df')
+        if self.snapshot is not None:
+            self.render(self.snapshot, self.selected, self.moves)
+
+    def position_piece(self, square, center):
+        oval, label = self.pieces[square]
+        x, y = center
+        radius = self.geometry()[2] * .36
+        self.coords(oval, x-radius, y-radius, x+radius, y+radius)
+        self.coords(label, x, y)
+
+    def render(self, game, selected=None, moves=()):
+        self.snapshot, self.selected, self.moves = game, selected, list(moves)
+        for square in list(self.pieces):
+            if square not in game.board:
+                for item in self.pieces.pop(square):
+                    self.delete(item)
+        for square, piece in game.board.items():
+            if square not in self.pieces:
+                self.pieces[square] = (self.create_oval(0,0,0,0,width=3), self.create_text(0,0))
+            oval, label = self.pieces[square]
+            self.position_piece(square, self.center(square))
+            self.itemconfigure(oval, fill='#f4f2e9' if piece.color=='White' else '#17232b',
+                               outline='#f5bd4f' if square==selected else '#91a5ad')
+            self.itemconfigure(label, text='K' if piece.king else '',
+                               fill='#17232b' if piece.color=='White' else '#f4f2e9',
+                               font=('Segoe UI', max(10,int(self.geometry()[2]*.26)), 'bold'))
+            self.tag_raise(oval)
+            self.tag_raise(label)
+        for item in self.overlays:
+            self.delete(item)
+        self.overlays = []
+        for move in moves:
+            x,y = self.center(move.end)
+            radius = self.geometry()[2]*.12
+            self.overlays.append(self.create_oval(x-radius,y-radius,x+radius,y+radius,fill='#f5bd4f',outline=''))
+</code></pre></details></section></main><footer><span>Phillip Gooden · Southern New Hampshire University · 2026</span><span>Python · Tkinter · SQLite</span></footer></body></html>
